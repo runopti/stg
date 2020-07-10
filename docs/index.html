@@ -1,0 +1,56 @@
+---
+layout: default
+---
+<body class="vscode-body vscode-light">
+<p data-line="4" class="code-line">Feature Selection using Stochastic Gates (STG) is a method for feature selection in neural network estimation problems.
+The new procedure is based on probabilistic relaxation of
+the l0 norm of features, or the count of the number of selected features.
+The proposed framework simultaneously learns either a nonlinear regression or classification function while selecting a small subset of features.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="assets/stg_figure1_left.png" alt="stg_image" class="loading" id="image-hash-3464815bc04deb73608de11bbc81d03bd15c0a4db2ab81751f0303f59422ea60"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Top: Each stochastic gate z_d is drawn from the STG approximation of the Bernoulli distribution (shown as the blue histogram on the right). Specifically, z_d is obtained by applying the hard-sigmoid function to a mean-shifted Gaussian random variable. Bottom: The z_d stochastic gate is attached to the x_d input feature, where the trainable parameter µ_d controls the probability of the gate being active</td>
+</tr>
+</tbody>
+</table>
+<h3 id="installation" id="installation-3" data-line="13" class="code-line">Installation</h3>
+<h4 id="installation-with-pip" id="installation-with-pip-3" data-line="15" class="code-line">Installation with pip</h4>
+<p data-line="17" class="code-line">To install with <code>pip</code>, run the following command:</p>
+<pre><code data-line="18" class="code-line"><code><div>pip install --user stg
+</div></code></code></pre>
+<h4 id="installation-from-github" id="installation-from-github-3" data-line="22" class="code-line">Installation from GitHub</h4>
+<p data-line="24" class="code-line">You can also clone the repository and install manually:</p>
+<pre><code data-line="25" class="code-line"><code><div>git clone 
+cd stg/python
+python setup.py install --user
+</div></code></code></pre>
+<h3 id="usage" id="usage-3" data-line="31" class="code-line">Usage</h3>
+<p data-line="33" class="code-line">Once you install the library, you can import <code>STG</code> to create a model instance:</p>
+<pre><code data-line="34" class="code-line"><code><div>from stg import STG
+model = STG(task_type='regression',input_dim=X_train.shape[1], output_dim=1, hidden_dims=[500, 50, 10], activation='tanh', optimizer='SGD', learning_rate=0.1, batch_size=X_train.shape[0], feature_selection=True, sigma=0.5, lam=0.1, random_state=1, device=&quot;cpu&quot;) 
+
+model.fit(X_train, y_train, nr_epochs=3000, valid_X=X_valid, valid_y=y_valid, print_interval=1000)
+# Start training...
+</div></code></code></pre>
+<p data-line="42" class="code-line">For more details, please see our Colab notebooks:</p>
+<ul>
+<li data-line="43" class="code-line"><a href="https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Regression-example.ipynb">Regression example</a></li>
+<li data-line="44" class="code-line"><a href="https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Classification-example.ipynb">Classification example</a></li>
+</ul>
+<h3 id="acknowledgements-and-references" id="acknowledgements-and-references-3" data-line="46" class="code-line">Acknowledgements and References</h3>
+<p data-line="48" class="code-line">We thank Junchen Yang for his help to develop the R wrapper.
+Some of our codebase and its structure is inspired by <a href="https://github.com/vacancy/Jacinle" data-href="https://github.com/vacancy/Jacinle">https://github.com/vacancy/Jacinle</a>.</p>
+<p data-line="51" class="code-line">If you find our library useful in your research, please consider citing us:</p>
+<pre><code data-line="52" class="code-line"><code><div>@incollection{icml2020_5085,
+ author = {Yamada, Yutaro and Lindenbaum, Ofir and Negahban, Sahand and Kluger, Yuval},
+ booktitle = {Proceedings of Machine Learning and Systems 2020},
+ pages = {8952--8963},
+ title = {Feature Selection using Stochastic Gates},
+ year = {2020}
+}
+</div></code></code></pre></body>
