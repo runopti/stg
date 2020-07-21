@@ -14,7 +14,6 @@ import numpy as np
 import logging
 logger = logging.getLogger("my-logger")
 
-import pytorch_pfn_extras as ppe
 from pytorch_pfn_extras.training import extensions
 
 __all__ = ['STG']
@@ -159,33 +158,16 @@ class STG(object):
             raise NotImplementedError()
 
         return data_loader 
-    
-    def _setup_extension_manager(self, max_epoch, iters_per_epoch):
-        if self.report_maps:
-            report_keys = list(self.report_maps.keys())
-        else:
-            report_keys = ''
-        my_extensions = [extensions.LogReport(),
-                extensions.ParameterStatistics(self._model, prefix='model'),
-                extensions.PlotReport(report_keys, 'epoch', filename='_'.join(report_keys)+'.png')]
-                #extensions.PrintReport(['epoch', 'iteration'])]
-        manager = ppe.training.ExtensionsManager(
-            self._model, self._optimizer, max_epoch,
-            extensions=my_extensions,
-            iters_per_epoch=iters_per_epoch)
-        return manager
 
     def fit(self, X, y, nr_epochs, valid_X=None, valid_y=None, 
         verbose=True, meters=None, early_stop=None, print_interval=1, shuffle=False):
         data_loader = self.get_dataloader(X, y, shuffle)
-        manager = self._setup_extension_manager(max_epoch=nr_epochs, iters_per_epoch=len(data_loader))
 
         if valid_X is not None:
             val_data_loader = self.get_dataloader(valid_X, valid_y, shuffle)
         else:
             val_data_loader = None
-        self.train(manager, data_loader, nr_epochs, val_data_loader, verbose, meters, early_stop, print_interval)
-        self.manager = manager
+        self.train(data_loader, nr_epochs, val_data_loader, verbose, meters, early_stop, print_interval)
 
     def evaluate(self, X, y):
         data_loader = self.get_dataloader(X, y, shuffle=None)
@@ -207,14 +189,13 @@ class STG(object):
             res.append(output_dict_np['pred'])
         return np.concatenate(res, axis=0)
 
-    def train_epoch(self, data_loader, meters=None, manager=None):
+    def train_epoch(self, data_loader, meters=None):
         if meters is None:
             meters = GroupMeters()
 
         self._model.train()
         end = time.time()
         for feed_dict in data_loader:
-            #with manager.run_iteration():
             data_time = time.time() - end; end = time.time()
             self.train_step(feed_dict, meters=meters)
             step_time = time.time() - end; end = time.time()
@@ -222,7 +203,7 @@ class STG(object):
             #meters.update({'time/data': data_time, 'time/step': step_time})
         return meters
 
-    def train(self, manager, data_loader, nr_epochs, val_data_loader=None, verbose=True, 
+    def train(self, data_loader, nr_epochs, val_data_loader=None, verbose=True, 
         meters=None, early_stop=None, print_interval=1):
         if meters is None:
             meters = GroupMeters()
@@ -231,7 +212,7 @@ class STG(object):
             meters.reset()
             if epoch == self.freeze_onward:
                 self._model.freeze_weights()
-            self.train_epoch(data_loader, meters=meters, manager=manager)
+            self.train_epoch(data_loader, meters=meters)
             if verbose and epoch % print_interval == 0:
                 self.validate(val_data_loader, self.metric, meters)
                 caption = 'Epoch: {}:'.format(epoch)
