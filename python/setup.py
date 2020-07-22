@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='stg',
-      version='0.1.1',
+      version='0.1.2',
       description='feature selection using stochastic gates',
       url='https://github.com/runopti/stg',
       author='Yutaro Yamada',

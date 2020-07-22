@@ -14,7 +14,6 @@ import numpy as np
 import logging
 logger = logging.getLogger("my-logger")
 
-from pytorch_pfn_extras.training import extensions
 
 __all__ = ['STG']
 
