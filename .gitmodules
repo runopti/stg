@@ -1,3 +1,0 @@
-[submodule "python/tests"]
-	path = python/tests
-	url = https://github.com/runopti/tests_stg.git
