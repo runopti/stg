@@ -123,9 +123,6 @@ class STG(object):
                     feed_dict['E'].detach().numpy(), feed_dict['T'].detach().numpy())
         if self.extra_args=='l1-softthresh':
             self._model.mlp[0][0].weight.data = self._model.prox_op(self._model.mlp[0][0].weight)
-        if self.report_maps: 
-            for key, func in self.report_maps.items():
-                ppe.reporting.report({key: func(self._model)}) 
 
         loss = as_float(loss)
         if meters is not None:
