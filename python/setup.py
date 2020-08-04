@@ -19,4 +19,5 @@ setup(name='stg',
           'six',
           'lifelines'
       ],
+      include_package_data=True,
       zip_safe=False)
