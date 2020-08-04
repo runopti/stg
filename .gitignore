@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# model
+*.pth
+
+# plots
+Rplots.pdf
+
 # data
 *.csv
 *.h5
