@@ -41,8 +41,9 @@ model.fit(X_train, y_train, nr_epochs=3000, valid_X=X_valid, valid_y=y_valid, pr
 ```
 
 For more details, please see our Colab notebooks:
-- [Regression example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Regression-example.ipynb)
 - [Classification example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Classification-example.ipynb)
+- [Regression example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Regression-example.ipynb)
+- [Cox example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Cox-example.ipynb)
 
 ### Acknowledgements and References
 

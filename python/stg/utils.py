@@ -8,6 +8,7 @@ import copy
 from torch.utils.data import Dataset
 from collections import defaultdict
 import h5py
+import os
 
 SKIP_TYPES = six.string_types
 
@@ -103,6 +104,16 @@ def load_datasets(dataset_file):
 
     return datasets
 
+def load_cox_gaussian_data():
+    dataset_file = os.path.join(os.path.dirname(__file__), 
+        'datasets/gaussian_survival_data.h5')
+    datasets = defaultdict(dict)
+    with h5py.File(dataset_file, 'r') as fp:
+        for ds in fp:
+            for array in fp[ds]:
+                datasets[ds][array] = fp[ds][array][:]
+
+    return datasets
 
 def prepare_data(x, label):
     if isinstance(label, dict):
