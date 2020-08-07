@@ -7,19 +7,17 @@ document()
 n_size <- 1000L;
 p_size <- 20L;
 
-#model = STG(task_type='regression',input_dim=X_train.shape[1], output_dim=1, hidden_dims=[500, 50, 10], activation='tanh',
-#    optimizer='SGD', learning_rate=0.1, batch_size=X_train.shape[0], feature_selection=feature_selection, sigma=0.5, lam=0.1, random_state=1, device=device) 
-
-result <- stg(1, task_type='regression', input_dim=p_size, output_dim=1L, hidden_dims = c(500,50, 10), activation='tanh',
+stg.model <- stg(task_type='regression', input_dim=p_size, output_dim=1L, hidden_dims = c(500,50, 10), activation='tanh',
             optimizer='SGD', learning_rate=0.1, batch_size=n_size, feature_selection=TRUE, sigma=0.5, lam=0.1, random_state=0.1)
 
-#pystg <- result$pystg 
-gg <- result$pystg$utils$create_sin_dataset(n_size, p_size);
-print(dim(gg[[1]]))
-print(class(gg[[1]]))
+## For creating simple datasets
+pystg <- reticulate::import("stg")
+datasets <- pystg$utils$create_sin_dataset(n_size, p_size);
+print(dim(datasets[[1]]))
+print(class(datasets[[1]]))
 
-print(dim(gg[[2]]))
-print(class(gg[[2]]))
+print(dim(datasets[[2]]))
+print(class(datasets[[2]]))
 
 train_test_split <- function(X, y, test_size){
     set.seed(12345)
@@ -35,11 +33,9 @@ train_test_split <- function(X, y, test_size){
     y_train, y_test))
 }
 
-X_data <- gg[[1]]
-y_data <- gg[[2]]
+X_data <- datasets[[1]]
+y_data <- datasets[[2]]
 
-print(dim(gg[[2]]))
-print(class(gg[[2]]))
 
 res_tmp = train_test_split(X_data, y_data, test_size=0.1)
 X_train <- res_tmp[[1]];
@@ -68,6 +64,6 @@ y_valid <- matrix(unlist(y_valid), byrow = TRUE, nrow = length(y_valid))
 #y_test <- reticulate::np_array(data = y_test)
 #y_valid <- reticulate::np_array(data = y_valid)
 
-result$operator$fit(X_train, y_train, nr_epochs=5000L, valid_X=X_valid, valid_y=y_valid, print_interval=1000L)
+stg.model$fit(X_train, y_train, nr_epochs=5000L, valid_X=X_valid, valid_y=y_valid, print_interval=1000L)
 
-result$operator$save_checkpoint('r_test_model.pth')
+stg.model$operator$save_checkpoint('r_test_model.pth')
