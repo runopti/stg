@@ -1,0 +1,15 @@
+Package: Rstg
+Title: STG : Feature Selection using STochastic Gates
+Version: 0.0.1
+Authors@R: 
+    person(given = "Yutaro",
+           family = "Yamada",
+           role = c("aut", "cre"),
+           email = "yutaro.yamada@yale.edu")
+Description: R interface to STG, a python library for feature selection using stochastic gates.
+Imports: reticulate (>= 1.4)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1

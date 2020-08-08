@@ -57,7 +57,7 @@ class STG(object):
                 task_type='classification', report_maps=False, random_state=1, extra_args=None):
         self.batch_size = batch_size
         self.activation = activation
-        self.device = device
+        self.device = self.get_device(device)
         self.report_maps = report_maps 
         self.task_type = task_type
         self.extra_args = extra_args
@@ -67,7 +67,18 @@ class STG(object):
         self._model.apply(self.init_weights)
         self._model = self._model.to(device)
         self._optimizer = get_optimizer(optimizer, self._model, lr=learning_rate, weight_decay=weight_decay)
-
+    
+    def get_device(self, device):
+        if device == "cpu":
+            device = torch.device("cpu")
+        elif device == None:
+            args_cuda = torch.cuda.is_available()
+            device = device = torch.device("cuda" if args_cuda else "cpu")
+        else:
+            raise NotImplementedError("Only 'cpu' or 'cuda' is a valid option.")
+        return device
+        
+        
     def init_weights(self, m):
         if isinstance(m, nn.Linear):
             stddev = torch.tensor(0.1)
@@ -123,9 +134,6 @@ class STG(object):
                     feed_dict['E'].detach().numpy(), feed_dict['T'].detach().numpy())
         if self.extra_args=='l1-softthresh':
             self._model.mlp[0][0].weight.data = self._model.prox_op(self._model.mlp[0][0].weight)
-        if self.report_maps: 
-            for key, func in self.report_maps.items():
-                ppe.reporting.report({key: func(self._model)}) 
 
         loss = as_float(loss)
         if meters is not None:

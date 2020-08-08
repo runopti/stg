@@ -15,8 +15,10 @@ setup(name='stg',
       packages=['stg'],
       install_requires=[
           'torch',
+          'sklearn'
           'h5py',
           'six',
           'lifelines'
       ],
+      include_package_data=True,
       zip_safe=False)
