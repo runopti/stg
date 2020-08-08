@@ -53,12 +53,9 @@ stg <- function(
     random_state = 123L,
     device = "cpu"
 ){
-    #     stop(paste0(
-    #     "Cannot load STG Python package. Please install through pip ",
-    #     "(e.g. pip install stg), and set the correct python path ",
-    #     "and then restart R."
-    #     ))
-    # }
+    if(is.null(pystg)){
+        load_pystg()
+    }
     if (is.numeric(x = freeze_onward)){
         freeze_onward <- as.integer(x = freeze_onward)
     }
