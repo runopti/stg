@@ -11,6 +11,8 @@ The proposed framework simultaneously learns either a nonlinear regression or cl
 |:--:|
 |Top: Each stochastic gate z_d is drawn from the STG approximation of the Bernoulli distribution (shown as the blue histogram on the right). Specifically, z_d is obtained by applying the hard-sigmoid function to a mean-shifted Gaussian random variable. Bottom: The z_d stochastic gate is attached to the x_d input feature, where the trainable parameter µ_d controls the probability of the gate being active|
 
+## Python 
+
 ### Installation
 
 #### Installation with pip
@@ -43,6 +45,57 @@ model.fit(X_train, y_train, nr_epochs=3000, valid_X=X_valid, valid_y=y_valid, pr
 For more details, please see our Colab notebooks:
 - [Regression example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Regression-example.ipynb)
 - [Classification example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Classification-example.ipynb)
+- [Cox example](https://colab.research.google.com/github/runopti/stg/blob/master/python/examples/Cox-example.ipynb)
+
+## R
+
+### Installation 
+
+You first need to install the python package. 
+
+#### Installation from CRAN
+
+Run the following command in your R console:
+```
+install.packages("Rstg")
+```
+
+#### Installation from Github
+
+```
+git clone git://github.com/runopti/stg.git
+cd stg/python
+python setup.py install --user
+cd ../Rstg
+R CMD INSTALL .
+```
+
+### Usage
+
+Please set the python path for `reticulate` to the python environment that you install the python stg package via this command in your R console or at the beginning of your R script. 
+```
+reticulate::use_python("path_to_your_python_env_with_stg")
+```
+
+Then you can instantiate a trainer:
+```
+stg_trainer <- stg(task_type='regression', input_dim=100L, output_dim=1L, hidden_dims = c(500,50, 10), activation='tanh', optimizer='SGD', learning_rate=0.1, batch_size=100L, feature_selection=TRUE, sigma=0.5, lam=0.1, random_state=0.1)
+```
+
+You can then fit the model to data as follows:
+```
+# After preparing `X_train`, `y_train`, `X_valid`, and `y_valid'
+stg_trainer$fit(X_train, y_train, nr_epochs=5000L, valid_X=X_valid, valid_y=y_valid, print_interval=1000L)
+```
+
+You can save your trained model 
+```
+stg_trainer$save_checkpoint('r_test_model.pth')
+```
+and load the model
+```
+stg_trainer$load_checkpoint('r_test_mode.pth')
+```
 
 ### Acknowledgements and References
 
@@ -59,5 +112,3 @@ If you find our library useful in your research, please consider citing us:
  year = {2020}
 }
 ```
-
-
