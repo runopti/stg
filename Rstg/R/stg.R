@@ -33,18 +33,10 @@
 #' @param random_state integer
 #' @param device string
 #' 'cpu' or 'cuda' (if you have GPU)
-#' @param ... Arguments passed to and from other methods
-#' 
-#' @export
-#' 
-stg <- function(...) {
-    UseMethod("stg")
-}
-
-#' @rdname stg
+#'
 #' @export
 #'
-stg.default <- function(
+stg <- function(
     task_type,
     input_dim,
     output_dim,
@@ -59,27 +51,23 @@ stg.default <- function(
     feature_selection=TRUE,
     weight_decay=0.001,
     random_state = 123L,
-    device = "cpu",
-    ...
+    device = "cpu"
 ){
-    # check installation; Do this later
-    if (!reticulate::py_module_available(module = "stg") || (is.null(pystg))) load_pystg()
-    #reticulate::use_python("/Users/yutaro/.pyenv/versions/Rstg/bin/python", required = TRUE)
-    #reticulate::use_python("/Users/yutaro/.pyenv/versions/3.7.0/envs/Rstg/bin/python3.7", required = TRUE)
-    #load_pystg()
-    #pystg <- reticulate::import("stg")
+    #     stop(paste0(
+    #     "Cannot load STG Python package. Please install through pip ",
+    #     "(e.g. pip install stg), and set the correct python path ",
+    #     "and then restart R."
+    #     ))
+    # }
     if (is.numeric(x = freeze_onward)){
         freeze_onward <- as.integer(x = freeze_onward)
     }
     input_dim <- as.integer(x = input_dim)
     output_dim <- as.integer(x = output_dim)
-    #for(i in seq_along(hidden_dims)) {
-    #    hidden_dims[[i]] <- as.integer(x = hidden_dims[[i]])
-    #}
     hidden_dims <- as.integer(hidden_dims)
     random_state <- as.integer(x = random_state)
     batch_size <- as.integer(x = batch_size)
-    
+
     model <- pystg$STG(
         task_type = task_type,
         input_dim = input_dim,

@@ -2,12 +2,9 @@
 % Please edit documentation in R/stg.R
 \name{stg}
 \alias{stg}
-\alias{stg.default}
 \title{STG: Feature Selection using Stochastic Gates}
 \usage{
-stg(...)
-
-\method{stg}{default}(
+stg(
   task_type,
   input_dim,
   output_dim,
@@ -22,13 +19,10 @@ stg(...)
   feature_selection = TRUE,
   weight_decay = 0.001,
   random_state = 123L,
-  device = "cpu",
-  ...
+  device = "cpu"
 )
 }
 \arguments{
-\item{...}{Arguments passed to and from other methods}
-
 \item{task_type}{string
 choose 'regression', 'classification', or 'cox'}
 

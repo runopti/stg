@@ -4,6 +4,8 @@ install('Rstg')
 setwd("/Users/yutaro/code/stg/Rstg")
 document()
 
+reticulate::use_python("/Users/yutaro/.pyenv/versions/3.7.0/envs/test-devR/bin/python3.7")
+reticulate::import("stg")
 
 #model = STG(task_type='regression',input_dim=X_train.shape[1], output_dim=1, hidden_dims=[500, 50, 10], activation='tanh',
 #    optimizer='SGD', learning_rate=0.1, batch_size=X_train.shape[0], feature_selection=feature_selection, sigma=0.5, lam=0.1, random_state=1, device=device) 

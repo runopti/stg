@@ -13,42 +13,9 @@ pystg_is_available <- function() {
   )
 }
 
-failed_pystg_import <- function(e) {
-  message("Error loading Python module stg")
-  message(e)
-  result <- as.character(e)
-  if (length(grep("ModuleNotFoundError: No module named 'stg'", result)) > 0 ||
-      length(grep("ImportError: No module named stg", result)) > 0) {
-    # not installed
-    if (utils::menu(c("Yes", "No"), title="Install STG Python package with reticulate?") == 1) {
-      install.stg()
-    }
-  } else if (length(grep("r\\-reticulate", reticulate::py_config()$python)) > 0) {
-    # installed, but envs sometimes give weird results
-    message("Consider removing the 'r-reticulate' environment by running:")
-    if (length(grep("virtualenvs", reticulate::py_config()$python)) > 0) {
-      message("reticulate::virtualenv_remove('r-reticulate')")
-    } else {
-      message("reticulate::conda_remove('r-reticulate')")
-    }
-  }
-}
-
-load_pystg <- function() {
-  delay_load = list(on_error=failed_pystg_import)
-  # load
-  if (is.null(pystg)) {
-    # first time load
-    result <- try(pystg <<- reticulate::import("stg", delay_load = delay_load))
-  } else {
-    # already loaded
-    result <- try(reticulate::import("stg", delay_load = delay_load))
-  }
-}
-
-#' Install STG Python Package
+#' Install MAGIC Python Package
 #'
-#' Install STG Python package into a virtualenv or conda env.
+#' Install MAGIC Python package into a virtualenv or conda env.
 #'
 #' On Linux and OS X the "virtualenv" method will be used by default
 #' ("conda" will be used if virtualenv isn't available). On Windows,
@@ -78,12 +45,11 @@ install.stg <- function(envname = "r-reticulate", method = "auto",
   },
   error = function(e) {
     stop(paste0(
-      "Cannot locate STG Python package. Please install through pip ",
+      "Cannot locate STG Python package, please install through pip ",
       "(e.g. pip install stg) and then restart R."
     ))
   }
   )
 }
-
 
 pystg <- NULL
