@@ -6,7 +6,7 @@ Authors@R:
            family = "Yamada",
            role = c("aut", "cre"),
            email = "yutaro.yamada@yale.edu")
-Description: R interface to STG, a python library for feature selection using stochastic gates.
+Description: 'STG' is a method for feature selection in neural network. The procedure is based on probabilistic relaxation of the l0 norm of features, or the count of the number of selected features. The framework simultaneously learns either a nonlinear regression or classification function while selecting a small subset of features. Read more: Yamada et al. (2020) https://proceedings.icml.cc/static/paper_files/icml/2020/5085-Paper.pdf
 Imports: reticulate (>= 1.4)
 License: MIT + file LICENSE
 Encoding: UTF-8
