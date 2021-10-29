@@ -28,7 +28,3 @@ load_pystg <- function() {
 
 pystg <- NULL
 
-.onLoad <- function(libname, pkgname) {
-  py_config <- reticulate::py_discover_config(required_module = "stg")
-  load_pystg()
-}

@@ -64,6 +64,9 @@ This is to train the gate parameters.}
 \item{device}{string
 'cpu' or 'cuda' (if you have GPU)}
 }
+\value{
+a "stg" object is returned.
+}
 \description{
 STG is a method for feature selection in neural network estimation problems.
 The new procedure is based on probabilistic relaxation of the l0 norm of

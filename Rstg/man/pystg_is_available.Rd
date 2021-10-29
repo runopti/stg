@@ -6,6 +6,9 @@
 \usage{
 pystg_is_available()
 }
+\value{
+No return value, called for side effects
+}
 \description{
 This is used to avoid running tests on CRAN
 }
