@@ -33,6 +33,8 @@
 #' @param random_state integer
 #' @param device string
 #' 'cpu' or 'cuda' (if you have GPU)
+#' 
+#' @return a "stg" object is returned.
 #'
 #' @examples
 #' if (pystg_is_available()){
