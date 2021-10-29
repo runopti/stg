@@ -1,6 +1,7 @@
 #' Check whether STG Python package is available and can be loaded
 #' 
 #' This is used to avoid running tests on CRAN
+#' @return No return value, called for side effects
 #' 
 #' @export
 pystg_is_available <- function() {
@@ -26,3 +27,8 @@ load_pystg <- function() {
 
 
 pystg <- NULL
+
+.onLoad <- function(libname, pkgname) {
+  py_config <- reticulate::py_discover_config(required_module = "stg")
+  load_pystg()
+}
