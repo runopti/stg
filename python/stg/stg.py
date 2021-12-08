@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from .models import STGClassificationModel, STGRegressionModel, MLPClassificationModel, MLPRegressionModel, STGCoxModel, MLPCoxModel, L1RegressionModel, SoftThreshRegressionModel, L1GateRegressionModel
+from .models import STGClassificationModel, STGRegressionModel, MLPClassificationModel, MLPRegressionModel, STGCoxModel, MLPCoxModel, L1RegressionModel, SoftThreshRegressionModel, L1GateRegressionModel, LSPINRegressionModel, LSPINClassificationModel
 from .utils import get_optimizer, as_tensor, as_float, as_numpy, as_cpu, SimpleDataset, FastTensorDataLoader, probe_infnan
 from .io import load_state_dict, state_dict
 from .meter import GroupMeters
@@ -52,7 +52,8 @@ def _standard_truncnorm_sample(lower_bound, upper_bound, sample_shape=torch.Size
 
 
 class STG(object):
-    def __init__(self, device, input_dim=784, output_dim=10, hidden_dims=[400, 200], activation='relu', sigma=0.5, lam=0.1,
+    def __init__(self, device, input_dim=784, output_dim=10, hidden_dims=[400, 200],
+                activation='relu', sigma=0.5, lam=0.1,
                 optimizer='Adam', learning_rate=1e-5,  batch_size=100, freeze_onward=None, feature_selection=True, weight_decay=1e-3, 
                 task_type='classification', report_maps=False, random_state=1, extra_args=None):
         self.batch_size = batch_size
@@ -64,7 +65,7 @@ class STG(object):
         self.freeze_onward = freeze_onward
         self._model = self.build_model(input_dim, output_dim, hidden_dims, activation, sigma, lam, 
                                        task_type, feature_selection)
-        self._model.apply(self.init_weights)
+        #self._model.apply(self.init_weights)
         self._model = self._model.to(device)
         self._optimizer = get_optimizer(optimizer, self._model, lr=learning_rate, weight_decay=weight_decay)
     
@@ -92,13 +93,19 @@ class STG(object):
             self.metric = nn.CrossEntropyLoss()
             self.tensor_names = ('input','label')
             if feature_selection:
-                return STGClassificationModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation, sigma=sigma, lam=lam)
+                if 'gating_net_hidden_dims' in self.extra_args:
+                    return LSPINClassificationModel(input_dim, output_dim, hidden_dims, 
+                        gating_net_hidden_dims=self.extra_args['gating_net_hidden_dims'],
+                        device=self.device, activation=activation, sigma=sigma, lam=lam)
+                else:
+                    return STGClassificationModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation, sigma=sigma, lam=lam)
             else:
                 return MLPClassificationModel(input_dim, output_dim, hidden_dims, activation=activation)
         elif task_type == 'regression':
             assert output_dim == 1
             self.metric = nn.MSELoss()
             self.tensor_names = ('input','label')
+            '''
             if self.extra_args is not None:
                 if self.extra_args == 'l1-softthresh':
                     return SoftThreshRegressionModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation)
@@ -106,11 +113,18 @@ class STG(object):
                     return L1RegressionModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation)
                 elif self.extra_args == 'l1-gate':
                     return L1GateRegressionModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation)
+
             else:
-                if feature_selection:
-                    return STGRegressionModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation, sigma=sigma, lam=lam)
+            '''
+            if feature_selection:
+                if 'gating_net_hidden_dims' in self.extra_args:
+                    return LSPINRegressionModel(input_dim, output_dim, hidden_dims, 
+                        gating_net_hidden_dims=self.extra_args['gating_net_hidden_dims'],
+                        device=self.device, activation=activation, sigma=sigma, lam=lam)
                 else:
-                    return MLPRegressionModel(input_dim, output_dim, hidden_dims, activation=activation)
+                    return STGRegressionModel(input_dim, output_dim, hidden_dims, device=self.device, activation=activation, sigma=sigma, lam=lam)
+            else:
+                return MLPRegressionModel(input_dim, output_dim, hidden_dims, activation=activation)
         elif task_type == 'cox':
             self.metric = PartialLogLikelihood
             self.tensor_names = ('X', 'E', 'T')
@@ -132,8 +146,8 @@ class STG(object):
         if self.task_type=='cox':
             ci = calc_concordance_index(logits.detach().numpy(), 
                     feed_dict['E'].detach().numpy(), feed_dict['T'].detach().numpy())
-        if self.extra_args=='l1-softthresh':
-            self._model.mlp[0][0].weight.data = self._model.prox_op(self._model.mlp[0][0].weight)
+        #if self.extra_args=='l1-softthresh':
+        #    self._model.mlp[0][0].weight.data = self._model.prox_op(self._model.mlp[0][0].weight)
 
         loss = as_float(loss)
         if meters is not None:
@@ -295,6 +309,13 @@ class STG(object):
             logger.warning('No checkpoint found at specified position: "{}".'.format(filename))
         return None
 
-    def get_gates(self, mode):
-        return self._model.get_gates(mode)
+    def get_gates(self, mode, x):
+        if type(self._model).__name__ == 'LSPINRegressionModel':
+            if len(x.shape) == 1:
+                raise ValueError('Make sure that input has a batch \
+                        dimension to get gates.')
+            x = torch.from_numpy(x).float()
+            return self._model.get_gates(mode, x)
+        else:
+            return self._model.get_gates(mode)
 

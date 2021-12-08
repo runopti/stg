@@ -34,6 +34,40 @@ class FeatureSelector(nn.Module):
         return self
 
 
+class GatingNet(nn.Module):
+    def __init__(self, input_dim, gating_net_hidden_dims, sigma,
+                device, activation, batch_norm, dropout):
+        super(GatingNet, self).__init__()
+        #self.mu = torch.nn.Parameter(0.01*torch.randn(input_dim, ), requires_grad=True)
+        self.net = MLPLayer(input_dim, input_dim, gating_net_hidden_dims,
+                         batch_norm=batch_norm, dropout=dropout, activation='tanh')
+        #self.noise = torch.randn(self.mu.size()) 
+        self.noise = torch.randn(input_dim) 
+        self.sigma = sigma
+        self.device = device
+
+    def calc_mu(self, x):
+        return self.net(x)
+    
+    def forward(self, prev_x):
+        mu = self.calc_mu(prev_x)
+        z = mu + self.sigma*self.noise.normal_()*self.training 
+        stochastic_gate = self.hard_sigmoid(z)
+        new_x = prev_x * stochastic_gate
+        return new_x, mu
+    
+    def hard_sigmoid(self, x):
+        return torch.clamp(x+0.5, 0.0, 1.0)
+
+    def regularizer(self, x):
+        ''' Gaussian CDF. '''
+        return 0.5 * (1 + torch.erf(x / math.sqrt(2))) 
+
+    def _apply(self, fn):
+        super(GatingNet, self)._apply(fn)
+        self.noise = fn(self.noise)
+        return self
+
 class GatingLayer(nn.Module):
     '''To implement L1-based gating layer (so that we can compare L1 with L0(STG) in a fair way)
     '''
@@ -87,7 +121,7 @@ class MLPLayer(nn.Module):
 
         nr_hiddens = len(hidden_dims)
         for i in range(nr_hiddens):
-            layer = LinearLayer(dims[i], dims[i+1], batch_norm=batch_norm, dropout=dropout, activation=activation)
+            layer = LinearLayer(dims[i], dims[i+1], batch_norm=batch_norm, dropout=dropout, activation=activation) 
             modules.append(layer)
         layer = nn.Linear(dims[-2], dims[-1], bias=True)
         modules.append(layer)
