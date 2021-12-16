@@ -127,7 +127,8 @@ def prepare_data(x, label):
     t = t[sort_idx]
 
     #return x, {'e': e, 't': t} this is for parse_data(x, label); see the third line in the parse_data function. 
-    return {'x': x, 'e': e, 't': t}
+    #return {'x': x, 'e': e, 't': t}
+    return x, e, t
 
 def probe_infnan(v, name, extras={}):
     nps = torch.isnan(v)
