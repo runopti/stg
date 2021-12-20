@@ -65,7 +65,7 @@ class STG(object):
         self._model = self.build_model(input_dim, output_dim, hidden_dims, activation, sigma, lam, 
                                        task_type, feature_selection)
         self._model.apply(self.init_weights)
-        self._model = self._model.to(device)
+        self._model = self._model.to(self.device)
         self._optimizer = get_optimizer(optimizer, self._model, lr=learning_rate, weight_decay=weight_decay)
     
     def get_device(self, device):
@@ -183,7 +183,7 @@ class STG(object):
         print(meters.format_simple(''))
 
     def predict(self, X, verbose=True):
-        dataset = SimpleDataset(X)
+        dataset = SimpleDataset(torch.from_numpy(X).float().to(self.device))
         data_loader = DataLoader(dataset, batch_size=X.shape[0], shuffle=False) 
         res = []
         self._model.eval()
