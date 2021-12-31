@@ -71,9 +71,9 @@ class STG(object):
     def get_device(self, device):
         if device == "cpu":
             device = torch.device("cpu")
-        elif device == None:
+        elif device == "cuda":
             args_cuda = torch.cuda.is_available()
-            device = device = torch.device("cuda" if args_cuda else "cpu")
+            device = torch.device("cuda" if args_cuda else "cpu")
         else:
             raise NotImplementedError("Only 'cpu' or 'cuda' is a valid option.")
         return device
