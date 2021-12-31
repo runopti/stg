@@ -11,8 +11,9 @@ Rplots.pdf
 
 # data
 *.csv
-*.h5
 *.log
+*.h5
+!python/stg/datasets/gaussian_survival_data.h5
 *.npy
 *.pkl
 *.swp
