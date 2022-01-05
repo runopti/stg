@@ -96,7 +96,6 @@ class STG(object):
             else:
                 return MLPClassificationModel(input_dim, output_dim, hidden_dims, activation=activation)
         elif task_type == 'regression':
-            assert output_dim == 1
             self.metric = nn.MSELoss()
             self.tensor_names = ('input','label')
             if self.extra_args is not None:
